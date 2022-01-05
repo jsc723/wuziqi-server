@@ -23,7 +23,7 @@ string WZQMessage::serialize() {
     stringstream ss;
     ss << (int)op << endl;
     ss << i1 << "," << i2 << "," << i3 << "," << i4 << endl;
-    ss << s1 << "|s|" << s2 << "|s|" << s3 << "|s|" << s4 << endl;
+    ss << s1 << "</s>" << s2 << "</s>" << s3 << "</s>" << s4 << endl;
     return ss.str();
 }
 
@@ -40,7 +40,7 @@ void WZQMessage::deserialize(const string &encoded) {
     vector<string> v = split_line(line, ",");
     i1 = s2i(v[0]), i2 = s2i(v[1]), i3 = s2i(v[2]), i4 = s2i(v[3]);
     getline(ss, line);
-    v = split_line(line, "|s|");
+    v = split_line(line, "</s>");
     s1 = v[0];
     s2 = v[1];
     s3 = v[2];

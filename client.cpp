@@ -11,6 +11,7 @@
 #include <time.h>
 #include "TcpSocket.h"
 #include "wzq_msg.h"
+#include "utils.h"
 
 
 #define BUFFER_LENGTH		4096
@@ -30,7 +31,7 @@ int main(int argc, char *argv[]) {
     cout << "输入用户名和密码:" << endl;
     cin >> buf >> buf2;
     printf("[%s][%s]\n", buf.c_str(), buf2.c_str());
-    WZQMessage wmsg;
+    WZQMessage wmsg, resp;
     #if 0
     wmsg.op = WZ::SIGNUP;
     #else
@@ -39,20 +40,23 @@ int main(int argc, char *argv[]) {
     wmsg.s1 = buf;
     wmsg.s2 = buf2;
     socket.sendMsg(wmsg.serialize());
-    string recvMsg = socket.recvMsg();
-	cout << recvMsg << endl;
+    resp.deserialize(socket.recvMsg());
+    if(resp.i1 == 0) {
+        cout << "OK: ";
+        print_sha256(resp.s1);
+    } else {
+        cout << "ERR: " << resp.s1 << endl;
+    }
     #if 0
 	// 通信
 	while (1)
 	{
         cin >> buf;
-        msg.op = WZ::ECHO;
-        msg.s1 = buf;
-        string encoded = msg.serialize();
-		socket.sendMsg(encoded);
-		// 接收数据
-		string recvMsg = socket.recvMsg();
-		cout << recvMsg << endl;
+        wmsg.op = WZ::ECHO;
+        wmsg.s1 = buf;
+		socket.sendMsg(wmsg.serialize());
+        resp.deserialize(socket.recvMsg());
+	    cout << (resp.i1 == 0 ? "OK: ": "ERR: ") << resp.s1 << endl;
 
 	}
     #endif
